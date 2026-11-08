@@ -9,6 +9,7 @@ public class AppConfiguration {
 
     public static final int SUCIEDAD_MAXIMA = 10;
     public static final int AVISO_SUCIEDAD = 5;
+    public static final int INCREMENTO_SUCIEDAD = 1;
 
     public static final int TIEMPO_MINIMO_COMER = 1;
     public static final int TIEMPO_MAXIMO_COMER = 3; 

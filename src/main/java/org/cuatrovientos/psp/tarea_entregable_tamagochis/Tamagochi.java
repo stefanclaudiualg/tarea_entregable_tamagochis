@@ -51,7 +51,7 @@ public class Tamagochi extends Thread {
                 segundosVividos++;
 
                 if (segundosVividos % 20 == 0) {
-                    suciedad++;
+                    suciedad += AppConfiguration.INCREMENTO_SUCIEDAD;
                     
                     if (suciedad == AppConfiguration.AVISO_SUCIEDAD) {
                         System.out.println(nombre + ": Estoy empezando a estar sucio, deberías limpiarme.");
@@ -62,7 +62,7 @@ public class Tamagochi extends Thread {
                     }
                 }
 
-                if (segundosVividos >= (AppConfiguration.TIEMPO_DE_VIDA / 1000)) { 
+                if (segundosVividos >= (AppConfiguration.TIEMPO_DE_VIDA * 60)) { 
                     System.out.println(nombre + " ha llegado a su máximo de vida y ha muerto de viejo.");
                     morir();
                     break;
@@ -88,8 +88,11 @@ public class Tamagochi extends Thread {
         estado = Estado.COMIENDO;
         System.out.println(nombre + " ha empezado a comer.");
 
+        int minMilis = AppConfiguration.TIEMPO_MINIMO_COMER * 60 * 1000;
+        int maxMilis = AppConfiguration.TIEMPO_MAXIMO_COMER * 60 * 1000;
+
         Random random = new Random();
-        int tiempoComiendo = random.nextInt(AppConfiguration.TIEMPO_MAXIMO_COMER - AppConfiguration.TIEMPO_MINIMO_COMER + 1) + AppConfiguration.TIEMPO_MINIMO_COMER;
+        int tiempoComiendo = random.nextInt(maxMilis - minMilis + 1) + minMilis;
 
         try {
             Thread.sleep(tiempoComiendo);

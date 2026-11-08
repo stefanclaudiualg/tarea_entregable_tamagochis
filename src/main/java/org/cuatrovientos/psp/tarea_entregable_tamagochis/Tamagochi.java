@@ -17,19 +17,15 @@ public class Tamagochi extends Thread {
     private String nombre;
     private Estado estado;
     private int suciedad;
-    private int tiempoComiendo;
 
     public Tamagochi(int id, String nombre) {
         this.id = id;
         this.nombre = nombre;
         this.suciedad = 0;
         this.estado = Estado.LIBRE;
-
-        Random random = new Random();
-        this.tiempoComiendo = random.nextInt(AppConfiguration.TIEMPO_MAXIMO_COMER - AppConfiguration.TIEMPO_MINIMO_COMER + 1) + AppConfiguration.TIEMPO_MINIMO_COMER;
     }
 
-    public int getTamagochiId() {
+    public int getTamagochiPorId() {
         return id;
     }
 
@@ -43,10 +39,6 @@ public class Tamagochi extends Thread {
 
     public Estado getEstado() {
         return estado;
-    }
-
-    public boolean isEstaVivo() {
-        return estado != Estado.MUERTO;
     }
 
     @Override
@@ -96,12 +88,13 @@ public class Tamagochi extends Thread {
         estado = Estado.COMIENDO;
         System.out.println(nombre + " ha empezado a comer.");
 
+        Random random = new Random();
+        int tiempoComiendo = random.nextInt(AppConfiguration.TIEMPO_MAXIMO_COMER - AppConfiguration.TIEMPO_MINIMO_COMER + 1) + AppConfiguration.TIEMPO_MINIMO_COMER;
+
         try {
             Thread.sleep(tiempoComiendo);
             System.out.println(nombre + " ha terminado de comer.");
-            if (estado != Estado.MUERTO) {
-                estado = Estado.LIBRE; 
-            }
+            estado = Estado.LIBRE; 
         } catch (InterruptedException e) {
             System.out.println(nombre + " fue interrumpido mientras comía.");
             Thread.currentThread().interrupt();
@@ -122,9 +115,7 @@ public class Tamagochi extends Thread {
             Thread.sleep(5000); 
             suciedad = 0; 
             System.out.println(nombre + " se ha limpiado y ahora está limpio.");
-            if (estado != Estado.MUERTO) {
-                estado = Estado.LIBRE; 
-            }
+            estado = Estado.LIBRE; 
         } catch (InterruptedException e) {
             System.out.println(nombre + " fue interrumpido mientras se limpiaba.");
             Thread.currentThread().interrupt();
@@ -132,7 +123,7 @@ public class Tamagochi extends Thread {
         }
     }
 
-    public void jugarTamagochi(Scanner scanner) {
+    public void jugarTamagochi() {
         if (estado != Estado.LIBRE) {
             System.out.println(nombre + ": No puedo jugar ahora, estoy " + estado);
             return;
@@ -142,6 +133,7 @@ public class Tamagochi extends Thread {
         System.out.println(nombre + " ha empezado a jugar.");
 
         Random random = new Random();
+        Scanner scanner = new Scanner(System.in);
         int numero1, numero2, resultadoSuma;
 
         do {
@@ -150,17 +142,17 @@ public class Tamagochi extends Thread {
             resultadoSuma = numero1 + numero2;
         } while (resultadoSuma >= 10);
 
-        boolean estaJugando = true;
+        boolean estajugando = true;
 
-        while (estaJugando && estado != Estado.MUERTO) {
+        while (estajugando && estado != Estado.MUERTO) {
             System.out.print("Suma: " + numero1 + " + " + numero2 + "= ");
-            
+
             if (scanner.hasNextInt()) {
                 int respuestaCuidador = scanner.nextInt();
 
                 if (respuestaCuidador == resultadoSuma) {
                     System.out.println("Correcto, juego terminado.");
-                    estaJugando = false;
+                    estajugando = false;
                 } else {
                     System.out.println("Resultado incorrecto, sigues jugando.");
                 }
@@ -170,24 +162,17 @@ public class Tamagochi extends Thread {
             }
         }
 
-        if (estado != Estado.MUERTO) {
-            estado = Estado.LIBRE;
-        }
+        estado = Estado.LIBRE;
     }
 
-    public void jugarTamagochi() {
-        jugarTamagochi(new Scanner(System.in));
-    }
-
-    public boolean destruirTamagochi() {
-        if (estado == Estado.LIBRE) {
-            System.out.println(nombre + " ha sido destruido por el cuidador.");
-            morir();
-            this.interrupt();
-            return true;
-        } else {
+    public void destruirTamagochi() {
+        if (estado != Estado.LIBRE) {
             System.out.println(nombre + ": No puedo ser destruido ahora, estoy " + estado);
-            return false;
+            return;
         }
+
+        System.out.println(nombre + " ha sido destruido por el cuidador.");
+        morir();
+        this.interrupt();
     }
 }
